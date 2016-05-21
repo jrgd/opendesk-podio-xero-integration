@@ -149,6 +149,7 @@ class PodioInvoiceService {
         "status-2": this._mapStatus(item.Status),
         "title": item.CurrencyCode,
         "exchange-rate": item.CurrencyRate,
+        "sent-to-contact": item.SentToContact === 'true' ? 1 : undefined,
         "subtotal": item.SubTotal,
         "total-tax": item.TotalTax,
         "total": item.Total,
