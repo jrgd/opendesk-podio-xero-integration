@@ -7,7 +7,7 @@ const PodioInvoiceService = require('./src/PodioInvoiceService');
 const XeroInvoiceService = require('./src/XeroInvoiceService');
 const InvoiceImportManager = require('./src/InvoiceImportManager');
 
-const SECONDS_BETWEEN_REFRESH = 86400 * 3;
+const SECONDS_BETWEEN_REFRESH = 86400;
 
 function syncXeroToPodio(args) {
   function _daysToSeconds(days) {
