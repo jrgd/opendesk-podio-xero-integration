@@ -13,8 +13,9 @@ const args = {
 require('../index')(args).then(function () {
   console.info('Sync process complete...');
   process.exit(0);
-}, function (errors) {
+}, function (error) {
   console.error('Something went wrong while syncing, the process has failed.');
-  console.error(errors);
+  console.error(error);
+  console.error(error.stack);
   process.exit(-1);
 });
