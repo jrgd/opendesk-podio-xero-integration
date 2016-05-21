@@ -1,0 +1,1 @@
+synctask: ./bin/sync.js

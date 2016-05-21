@@ -7,6 +7,7 @@
     "bluebird": "^3.3.5",
     "dotenv": "^2.0.0",
     "podio-js": "^1.4.2",
+    "redis": "^2.6.0-2",
     "xero": "0.0.8"
   },
   "engines": {

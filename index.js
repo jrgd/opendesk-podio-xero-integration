@@ -6,6 +6,7 @@
 const PodioInvoiceService = require('./src/PodioInvoiceService');
 const XeroInvoiceService = require('./src/XeroInvoiceService');
 const InvoiceImportManager = require('./src/InvoiceImportManager');
+const sessionStore = require('./src/SessionStore');
 
 const SECONDS_BETWEEN_REFRESH = 86400;
 
@@ -29,13 +30,14 @@ function syncXeroToPodio(args) {
   });
 
   return manager.sync().then((successes) => {
-    console.info(`All these are OK!`, successes)
+    console.info(`All these are OK!`, successes);
   }, (errors) => {
     console.error(`All these are errors!`, errors);
   }).catch((exceptions) => {
     // catch exceptions
     console.error(`All these are exceptions!`, exceptions);
-  });
+    throw exceptions;
+  }).finally(() => sessionStore.shutdown());
 }
 
 module.exports = syncXeroToPodio;

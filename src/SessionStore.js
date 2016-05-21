@@ -1,18 +1,24 @@
-// Taken from https://github.com/podio/podio-js/blob/master/examples/server_auth/sessionStore.js
+'use strict';
 
-var fs = require('fs');
-var path = require('path');
+const Promise = require('bluebird');
+const redis = require('redis');
 
-function fileName(authType) {
-  return path.join(__dirname, '/../tmp/' + authType + '.json');
+const client = redis.createClient(process.env.REDIS_URL || 'redis://127.0.0.1:6379/0');
+const currentSessionPrefix = 'session-podio';
+
+client.on('error', function (err) {
+  console.error(`Error from Redis Session Store: ${err}`);
+});
+
+function currentSession(authType) {
+  return `${currentSessionPrefix}-${authType}`;
 }
 
 function get(authType, callback) {
-  var podioOAuth = fs.readFile(fileName(authType), 'utf8', function(err, data) {
-    // Throw error, unless it's file-not-found
-    if (err && err.errno !== 2) {
-      throw new Error('Reading from the sessionStore failed');
-    } else if (data.length > 0) {
+  client.get(currentSession(authType), function (err, data) {
+    if (err) {
+      throw err;
+    } else if (data && data.length > 0) {
       callback(JSON.parse(data));
     } else {
       callback();
@@ -25,18 +31,22 @@ function set(podioOAuth, authType, callback) {
     throw new Error('Invalid authType');
   }
 
-  fs.writeFile(fileName(authType), JSON.stringify(podioOAuth), 'utf8', function(err) {
+  client.set(currentSession(authType), JSON.stringify(podioOAuth), function (err) {
     if (err) {
-      throw new Error('Writing in the sessionStore failed');
+      throw err;
     }
-
     if (typeof callback === 'function') {
       callback();
     }
   });
 }
 
+function shutdown() {
+  return Promise.promisify(client.quit).call(client);
+}
+
 module.exports = {
   get: get,
-  set: set
+  set: set,
+  shutdown: shutdown
 };
