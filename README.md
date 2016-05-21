@@ -2,6 +2,11 @@
 
 Syncing data from Xero to Podio
 
+## Dependencies
+
+- node.js >= 4.4
+- Redis
+
 ## Setup and Configuration
 
     npm install
