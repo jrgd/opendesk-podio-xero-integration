@@ -12,25 +12,31 @@ class PodioInvoiceService {
     }
 
     return this._authenticateClient.then(() => {
-      return Promise.all(items.map((item) => {
-        console.info('[Podio] - Storing item on podio, xero Id', item.InvoiceID);
-        const data = this._mapXeroToPodio(item);
+      return Promise.all(items.map((item, index) => {
+        var deferred = Promise.pending();
+        // Rough rate limiting of our requests
+        setTimeout(() => {
+          console.info('[Podio] - Storing item on podio, xero Id', item.InvoiceID);
+          const data = this._mapXeroToPodio(item);
 
-        // Check if exists first then update, or create
-        return this._getItemByXeroId(item.InvoiceID).then((podioId) => {
-          if (podioId) {
-            console.info(`Item found on Podio ${podioId}, update it`);
-            return this._update(podioId, data);
-          } else {
-            console.info('Item does not exist, create it');
-            return this._create(data);
-          }
-        }, (err) => {
-          console.error('Error while syncing to Podio for item', item);
-        }).then((response) => {
-          console.info(response);
-          // data
-        });
+          // Check if exists first then update, or create
+          return this._getItemByXeroId(item.InvoiceID).then((podioId) => {
+            let ret;
+            if (podioId) {
+              console.info(`Item found on Podio ${podioId}, update it`);
+              ret = this._update(podioId, data);
+            } else {
+              console.info('Item does not exist, create it');
+              ret = this._create(data);
+            }
+            deferred.resolve(ret);
+          }, (err) => {
+            console.error('Error while syncing to Podio for item', item.InvoiceID);
+            deferred.reject(err);
+          });
+        }, (100 * (index + 1)));
+
+        return deferred.promise;
       }));
     }, (err) => {
       console.error(err, err.stack);
@@ -83,7 +89,7 @@ class PodioInvoiceService {
       return response && response.item_id;
     }, (err) => {
       if (err.name === 'PodioNotFoundError') {
-        console.info('Item does not exist, create it', err);
+        console.info('Item does not exist, create it', err.status);
       } else {
         console.error('Could not check for item existance', err);
       }
@@ -158,7 +164,7 @@ class PodioInvoiceService {
         "amount-due": item.AmountDue,
         "amount-paid": item.AmountPaid,
         "amount-credited": item.amountCredited,
-        "issue-date": this._formatDate(item.IssueDate),
+        "issue-date": this._formatDate(item.Date),
         "due-date": this._formatDate(item.DueDate),
         "expected-payment-date": this._formatDate(item.ExpectedPaymentDate),
         "planned-payment-date": this._formatDate(item.PlannedPaymentDate),
