@@ -15,27 +15,31 @@ class PodioInvoiceService {
       return Promise.all(items.map((item, index) => {
         var deferred = Promise.pending();
         // Rough rate limiting of our requests
-        setTimeout(() => {
-          console.info('[Podio] - Storing item on podio, xero Id', item.InvoiceID);
-          const data = this._mapXeroToPodio(item);
+        setTimeout(
+          (function (deferred, item, index) {
+            return () => {
+              console.info(`[Podio] - Storing item on podio, xero Id: ${item.InvoiceID} , index: ${index}`);
+              const data = this._mapXeroToPodio(item);
 
-          // Check if exists first then update, or create
-          return this._getItemByXeroId(item.InvoiceID).then((podioId) => {
-            let ret;
-            if (podioId) {
-              console.info(`Item found on Podio ${podioId}, update it`);
-              ret = this._update(podioId, data);
-            } else {
-              console.info('Item does not exist, create it');
-              ret = this._create(data);
-            }
-            deferred.resolve(ret);
-          }, (err) => {
-            console.error('Error while syncing to Podio for item', item.InvoiceID);
-            deferred.reject(err);
-          });
-        }, (100 * (index + 1)));
-
+              // Check if exists first then update, or create
+              return this._getItemByXeroId(item.InvoiceID).then((podioId) => {
+                let ret;
+                if (podioId) {
+                  console.info(`Item found on Podio ${podioId}, update it`);
+                  ret = this._update(podioId, data);
+                } else {
+                  console.info('Item does not exist, create it');
+                  ret = this._create(data);
+                }
+                deferred.resolve(ret);
+              }, (err) => {
+                console.error('Error while syncing to Podio for item', item.InvoiceID);
+                deferred.reject(err);
+              });
+            };
+          }).call(this, deferred, item, index),
+          (100 * (index + 1))
+        );
         return deferred.promise;
       }));
     }, (err) => {
