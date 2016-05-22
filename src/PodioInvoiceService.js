@@ -167,7 +167,7 @@ class PodioInvoiceService {
         "total-discounts": item.TotalDiscounts,
         "amount-due": item.AmountDue,
         "amount-paid": item.AmountPaid,
-        "amount-credited": item.amountCredited,
+        "amount-credited": item.AmountCredited,
         "issue-date": this._formatDate(item.Date),
         "due-date": this._formatDate(item.DueDate),
         "expected-payment-date": this._formatDate(item.ExpectedPaymentDate),
