@@ -11,15 +11,15 @@ const sessionStore = require('./src/SessionStore');
 const SECONDS_BETWEEN_REFRESH = 86400;
 
 function syncXeroToPodio(args) {
-  function _daysToSeconds(days) {
-    return days * 86400;
+  function _minsToSeconds(mins) {
+    return mins * 60;
   }
 
   function _sinceEpoch(secondsAgo) {
     return Date.now() - (secondsAgo * 1000);
   }
 
-  const since = _sinceEpoch(_daysToSeconds(args.days) || SECONDS_BETWEEN_REFRESH);
+  const since = _sinceEpoch(_minsToSeconds(args.minutes) || SECONDS_BETWEEN_REFRESH);
   const sinceDate = new Date(since);
 
   const manager = new InvoiceImportManager({

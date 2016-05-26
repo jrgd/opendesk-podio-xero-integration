@@ -7,7 +7,7 @@ const params = process.argv.slice(2);
 console.info('Starting sync process...');
 
 const args = {
-  days: params[0]
+  minutes: params[0]
 };
 
 require('../index')(args).then(function () {

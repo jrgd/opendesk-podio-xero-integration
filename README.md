@@ -16,7 +16,7 @@ Copy `.env.template` to `.env` and set the env vars
 
 ## Usage
 
-    ./bin/sync.js  <optional number of days to sync over>
+    ./bin/sync.js  <optional number of minutes to sync over>
 
 # License
 
