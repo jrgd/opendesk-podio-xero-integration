@@ -6,10 +6,16 @@ const Podio = require('podio-js').api;
 const sessionStore = require('./SessionStore');
 
 class PodioInvoiceService {
+  constructor(options) {
+    this.podioRateLimitMs = options.podioRateLimitMs || 4000;
+  }
+
   updateItems(items) {
     if (!items) {
       return Promise.resolve();
     }
+
+    console.info(`Starting sync of ${items.length} items at rate of one per ${this.podioRateLimitMs} ms`);
 
     return this._authenticateClient.then(() => {
       return Promise.all(items.map((item, index) => {
@@ -38,7 +44,7 @@ class PodioInvoiceService {
               });
             };
           }).call(this, deferred, item, index),
-          (100 * (index + 1))
+          (this.podioRateLimitMs * (index + 1))
         );
         return deferred.promise;
       }));

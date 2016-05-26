@@ -9,6 +9,7 @@ const InvoiceImportManager = require('./src/InvoiceImportManager');
 const sessionStore = require('./src/SessionStore');
 
 const SECONDS_BETWEEN_REFRESH = 86400;
+const MS_BETWEEN_PODIO_WRITES = 4000;
 
 function syncXeroToPodio(args) {
   function _minsToSeconds(mins) {
@@ -21,9 +22,12 @@ function syncXeroToPodio(args) {
 
   const since = _sinceEpoch(_minsToSeconds(args.minutes) || SECONDS_BETWEEN_REFRESH);
   const sinceDate = new Date(since);
+  const podioRateLimitMs = args.podioRateLimitMs || MS_BETWEEN_PODIO_WRITES;
 
   const manager = new InvoiceImportManager({
-    destination: new PodioInvoiceService(),
+    destination: new PodioInvoiceService({
+      podioRateLimitMs
+    }),
     source: new XeroInvoiceService({
       sinceDate
     })

@@ -7,7 +7,8 @@ const params = process.argv.slice(2);
 console.info('Starting sync process...');
 
 const args = {
-  minutes: params[0]
+  minutes: parseInt(params[0], 10),
+  podioRateLimitMs: parseInt(params[1], 10)
 };
 
 require('../index')(args).then(function () {
