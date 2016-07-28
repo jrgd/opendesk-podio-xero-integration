@@ -43,10 +43,10 @@ function shutdown() {
 
 module.exports = {
   setSyncError: function (key, value) {
-    set(key, value);
+    set('sync-error-' + key, value);
   },
   clearSyncError: function (key) {
-    client.del(key);
+    client.del('sync-error-' + key);
   },
   set: function (podioOAuth, authType, callback) {
     if (/server|client|password/.test(authType) === false) {
