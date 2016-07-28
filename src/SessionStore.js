@@ -42,16 +42,20 @@ function shutdown() {
 }
 
 module.exports = {
-  get: get,
-  set: set,
-  setSession: function (podioOAuth, authType, callback) {
+  setSyncError: function (key, value) {
+    set(key, value);
+  },
+  clearSyncError: function (key) {
+    client.del(key);
+  },
+  set: function (podioOAuth, authType, callback) {
     if (/server|client|password/.test(authType) === false) {
       throw new Error('Invalid authType');
     }
-    this.set(currentSession(authType), JSON.stringify(podioOAuth), callback);
+    set(currentSession(authType), JSON.stringify(podioOAuth), callback);
   },
-  getSession: function (authType, callback) {
-    this.get(currentSession(authType), callback);
+  get: function (authType, callback) {
+    get(currentSession(authType), callback);
   },
   shutdown: shutdown
 };
