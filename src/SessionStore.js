@@ -14,8 +14,8 @@ function currentSession(authType) {
   return `${currentSessionPrefix}-${authType}`;
 }
 
-function get(authType, callback) {
-  client.get(currentSession(authType), function (err, data) {
+function get(key, callback) {
+  client.get(key, function (err, data) {
     if (err) {
       throw err;
     } else if (data && data.length > 0) {
@@ -26,12 +26,8 @@ function get(authType, callback) {
   });
 }
 
-function set(podioOAuth, authType, callback) {
-  if (/server|client|password/.test(authType) === false) {
-    throw new Error('Invalid authType');
-  }
-
-  client.set(currentSession(authType), JSON.stringify(podioOAuth), function (err) {
+function set(key, value, callback) {
+  client.set(key, value, function (err) {
     if (err) {
       throw err;
     }
@@ -48,5 +44,14 @@ function shutdown() {
 module.exports = {
   get: get,
   set: set,
+  setSession: function (podioOAuth, authType, callback) {
+    if (/server|client|password/.test(authType) === false) {
+      throw new Error('Invalid authType');
+    }
+    this.set(currentSession(authType), JSON.stringify(podioOAuth), callback);
+  },
+  getSession: function (authType, callback) {
+    this.get(currentSession(authType), callback);
+  },
   shutdown: shutdown
 };
