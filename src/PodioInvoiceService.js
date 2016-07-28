@@ -37,9 +37,11 @@ class PodioInvoiceService {
                   console.info('Item does not exist, create it');
                   ret = this._create(data);
                 }
+                sessionStore.clearSyncError(item.InvoiceID);
                 deferred.resolve(ret);
               }, (err) => {
                 console.error('Error while syncing to Podio for item', item.InvoiceID);
+                sessionStore.setSyncError(item.InvoiceID, err);
                 deferred.reject(err);
               });
             };
