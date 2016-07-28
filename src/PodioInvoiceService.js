@@ -102,6 +102,7 @@ class PodioInvoiceService {
         console.info('Item does not exist, create it', err.status);
       } else {
         console.error('Could not check for item existance', err);
+        throw err;
       }
     });
   }
