@@ -182,8 +182,8 @@ class PodioInvoiceService {
         "expected-payment-date": this._formatDate(item.ExpectedPaymentDate),
         "planned-payment-date": this._formatDate(item.PlannedPaymentDate),
         "fully-paid-on-date": this._formatDate(item.FullyPaidOnDate),
-        "updated-date": this._formatDate(item.UpdatedDateUTC),
-        "force-create-marketplace-invoice": 1
+        "updated-date": this._formatDate(item.UpdatedDateUTC)//,
+        //"force-create-marketplace-invoice": 1
       }
     };
   }
